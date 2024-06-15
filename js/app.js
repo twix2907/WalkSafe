@@ -13,6 +13,11 @@ var firstLocationFound = false;
 var currentLatLng = null;
 var tracking = false;
 
+document.addEventListener('click', function() {
+    audio.play().catch(error => {
+        console.error('Error al reproducir audio:', error);
+    });
+});
 // Verificar si es Android y mostrar el mensaje de instalación
 if (navigator.userAgent.includes("Android")) {
     window.addEventListener("beforeinstallprompt", e => {
@@ -182,7 +187,7 @@ map.on('locationfound', onLocationFound);
 
         // Pedir permiso de geolocalización con alta precisión
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
+            navigator.geolocation.watchPosition(function(position) {
                 onLocationFound({
                     latlng: {
                         lat: position.coords.latitude,
