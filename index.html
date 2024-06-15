@@ -131,41 +131,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script>
-    let deferredPrompt; // Variable global para almacenar el evento beforeinstallprompt
-
-    // Verificar si es Android y mostrar el mensaje de instalación
-    if (navigator.userAgent.includes("Android")) {
-      window.addEventListener("beforeinstallprompt", e => {
-        // Evitar que Chrome 67 y versiones anteriores muestren automáticamente la notificación
-        e.preventDefault();
-        // Almacenar el evento para usarlo más tarde
-        deferredPrompt = e;
-        // Mostrar el botón de instalación
-        showInstallButton();
-      });
-    }
-
-    function showInstallButton() {
-      const installButton = document.getElementById('install-button');
-      installButton.style.display = 'block';
-
-      installButton.addEventListener('click', e => {
-        // Mostrar la ventana de instalación
-        deferredPrompt.prompt();
-
-        // Esperar a que el usuario responda a la instalación
-        deferredPrompt.userChoice.then(choiceResult => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('Usuario aceptó la instalación');
-          } else {
-            console.log('Usuario canceló la instalación');
-          }
-          deferredPrompt = null;
-        });
-      });
-    }
-  </script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
