@@ -199,22 +199,17 @@ map.on('locationfound', onLocationFound);
             console.error('La geolocalización no es soportada por este navegador.');
         }
 
-async function requestOrientationPermission() {
-    try {
-        if (DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === "function") {
-            const permissionState = await DeviceOrientationEvent.requestPermission();
-            if (permissionState === "granted") {
-                window.addEventListener("deviceorientation", handleOrientation, false);
-            } else {
-                console.error("Permiso de orientación denegado");
-            }
-        } else {
-            window.addEventListener("deviceorientation", handleOrientation, false);
-        }
-    } catch (error) {
-        console.error("Error al solicitar permisos de orientación:", error);
+// Manejador de orientación del dispositivo sin solicitar permisos
+function handleOrientation(event) {
+    var alpha = event.alpha;
+    var arrow = document.querySelector('.arrow-icon');
+    if (arrow) {
+        arrow.style.transform = 'rotate(' + alpha + 'deg)';
     }
 }
+
+window.addEventListener("deviceorientation", handleOrientation, false);
+
 document.getElementById('add-danger-zone-btn').addEventListener('click', function () {
     addingDangerZone = !addingDangerZone;
     var confirmBtn = document.getElementById('confirm-zone-btn');
