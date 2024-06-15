@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camina Seguro</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+            position: relative;
+        }
+        .arrow-icon {
+            width: 24px;
+            height: 24px;
+            display: block;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="13" r="2"/><path d="M12 22h0"/></svg>');
+            background-size: cover;
+            transform-origin: 50% 50%;
+        }
+        .hidden-marker {
+            opacity: 0;
+        }
+        .locate-btn {
+            background-color: white;
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .locate-btn:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        .locate-btn.active {
+            background-color: #007bff;
+            color: white;
+        }
+        #confirm-zone-btn {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+        #center-pin {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 1000;
+        }
+        .pin-icon {
+            width: 24px;
+            height: 24px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="13" r="2"/><path d="M12 22h0"/></svg>');
+            background-size: cover;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-3">
+       
+    <div class="sidebar bg-light" id="sidebar">
+        <div class="user-panel mt-3">
+            <div class="image">
+                <img id="user-photo" src="default-avatar.png" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="#" class="d-block" id="user-name">Nombre de Usuario</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h1>Camina Seguro</h1>
+            <button id="install-button" style="display: none;">
+                Instalar App
+              </button>
+            <button id="add-danger-zone-btn" class="btn btn-danger mb-3">Nueva zona roja</button>
+            <div id="radius-input-container" class="form-group" style="display:none;">
+                <label for="radius-input">Radio (metros):</label>
+                <input type="number" id="radius-input" class="form-control" value="100">
+            </div>
+            <div id="map">
+                <div id="center-pin"><div class="pin-icon"></div></div>
+            </div>
+            <button id="confirm-zone-btn" class="btn btn-primary">Confirmar</button>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h2>Comentarios</h2>
+            <form id="comment-form" data-zone-id="">
+                <div class="form-group">
+                    <label for="comment">Escribe tu comentario:</label>
+                    <textarea id="comment" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar comentario</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <h2>Lista de Comentarios</h2>
+            <ul id="comments-list" class="list-group">
+                <!-- Los comentarios se cargarán aquí -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script>
+    let deferredPrompt; // Variable global para almacenar el evento beforeinstallprompt
+
+    // Verificar si es Android y mostrar el mensaje de instalación
+    if (navigator.userAgent.includes("Android")) {
+      window.addEventListener("beforeinstallprompt", e => {
+        // Evitar que Chrome 67 y versiones anteriores muestren automáticamente la notificación
+        e.preventDefault();
+        // Almacenar el evento para usarlo más tarde
+        deferredPrompt = e;
+        // Mostrar el botón de instalación
+        showInstallButton();
+      });
+    }
+
+    function showInstallButton() {
+      const installButton = document.getElementById('install-button');
+      installButton.style.display = 'block';
+
+      installButton.addEventListener('click', e => {
+        // Mostrar la ventana de instalación
+        deferredPrompt.prompt();
+
+        // Esperar a que el usuario responda a la instalación
+        deferredPrompt.userChoice.then(choiceResult => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('Usuario aceptó la instalación');
+          } else {
+            console.log('Usuario canceló la instalación');
+          }
+          deferredPrompt = null;
+        });
+      });
+    }
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registrado con éxito:', registration);
+          })
+          .catch(error => {
+            console.log('Registro del Service Worker fallido:', error);
+          });
+      });
+    }
+  </script>
+<script src="js/app.js"></script>
+
+  
+  
+  
+
+</body>
+</html>
