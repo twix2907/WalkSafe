@@ -208,7 +208,7 @@ function handleOrientation(event) {
     }
 }
 
-window.addEventListener("deviceorientation", handleOrientation, false);
+window.addEventListener("deviceorientation", handleOrientation, true);
 
 document.getElementById('add-danger-zone-btn').addEventListener('click', function () {
     addingDangerZone = !addingDangerZone;
