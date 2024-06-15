@@ -199,13 +199,16 @@ map.on('locationfound', onLocationFound);
             console.error('La geolocalización no es soportada por este navegador.');
         }
 
-window.addEventListener('deviceorientation', function (event) {
+// Manejador de orientación del dispositivo sin solicitar permisos
+function handleOrientation(event) {
     var alpha = event.alpha;
     var arrow = document.querySelector('.arrow-icon');
     if (arrow) {
         arrow.style.transform = 'rotate(' + alpha + 'deg)';
     }
-}, true);
+}
+
+window.addEventListener("deviceorientation", handleOrientation, false);
 
 document.getElementById('add-danger-zone-btn').addEventListener('click', function () {
     addingDangerZone = !addingDangerZone;
