@@ -205,7 +205,7 @@ window.addEventListener('deviceorientation', function (event) {
     if (arrow) {
         arrow.style.transform = 'rotate(' + alpha + 'deg)';
     }
-}, false);
+}, true);
 
 document.getElementById('add-danger-zone-btn').addEventListener('click', function () {
     addingDangerZone = !addingDangerZone;
