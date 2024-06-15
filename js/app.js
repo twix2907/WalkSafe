@@ -1,3 +1,28 @@
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallButton();
+});
+
+function showInstallButton() {
+  const installButton = document.getElementById('install-button');
+  installButton.style.display = 'block';
+
+  installButton.addEventListener('click', e => {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choiceResult => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('Usuario aceptó la instalación');
+      } else {
+        console.log('Usuario canceló la instalación');
+      }
+      deferredPrompt = null;
+    });
+  });
+}
+
 var map = L.map('map').fitWorld();
 var arrowIcon = L.divIcon({
     className: 'arrow-icon-container',
