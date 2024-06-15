@@ -1,28 +1,3 @@
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  showInstallButton();
-});
-
-function showInstallButton() {
-  const installButton = document.getElementById('install-button');
-  installButton.style.display = 'block';
-
-  installButton.addEventListener('click', e => {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(choiceResult => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('Usuario aceptó la instalación');
-      } else {
-        console.log('Usuario canceló la instalación');
-      }
-      deferredPrompt = null;
-    });
-  });
-}
-
 var map = L.map('map').fitWorld();
 var arrowIcon = L.divIcon({
     className: 'arrow-icon-container',
@@ -200,16 +175,21 @@ const opcionesDeSolicitud = {
 };
 
 map.on('locationfound', onLocationFound);
-// Opciones para alta precisión
-        const geoOptions = {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-        };
+
+        function handleError(error) {
+            console.error('Error al obtener la geolocalización:', error);
+        }
 
         // Pedir permiso de geolocalización con alta precisión
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(initMap, handleError, geoOptions);
+            navigator.geolocation.getCurrentPosition(function(position) {
+                onLocationFound({
+                    latlng: {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    }
+                });
+            }, handleError, opcionesDeSolicitud);
         } else {
             console.error('La geolocalización no es soportada por este navegador.');
         }
