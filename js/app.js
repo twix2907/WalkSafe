@@ -200,7 +200,19 @@ const opcionesDeSolicitud = {
 };
 
 map.on('locationfound', onLocationFound);
-L.control.locate().addTo(map);
+// Opciones para alta precisión
+        const geoOptions = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        };
+
+        // Pedir permiso de geolocalización con alta precisión
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(initMap, handleError, geoOptions);
+        } else {
+            console.error('La geolocalización no es soportada por este navegador.');
+        }
 
 window.addEventListener('deviceorientation', function (event) {
     var alpha = event.alpha;
