@@ -13,6 +13,7 @@ var firstLocationFound = false;
 var currentLatLng = null;
 var tracking = false;
 
+
 document.addEventListener('click', function() {
     audio.play().catch(error => {
         console.error('Error al reproducir audio:', error);
@@ -28,30 +29,27 @@ if (navigator.userAgent.includes("Android")) {
       // Opcional: mostrar un botón o mensaje personalizado
       showInstallButton();
     });
-  }
+}
   
-  function showInstallButton() {
+function showInstallButton() {
     const installButton = document.getElementById('install-button');
     installButton.style.display = 'block';
   
     installButton.addEventListener('click', e => {
-      // Mostrar la ventana de instalación
-      deferredPrompt.prompt();
+        // Mostrar la ventana de instalación
+        deferredPrompt.prompt();
   
-      // Esperar a que el usuario responda a la instalación
-      deferredPrompt.userChoice.then(choiceResult => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('Usuario aceptó la instalación');
-        } else {
-          console.log('Usuario canceló la instalación');
-        }
-        deferredPrompt = null;
-      });
+        // Esperar a que el usuario responda a la instalación
+        deferredPrompt.userChoice.then(choiceResult => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Usuario aceptó la instalación');
+            } else {
+                console.log('Usuario canceló la instalación');
+            }
+            deferredPrompt = null;
+        });
     });
-  }
-  
-
-
+}
 
 // Configuración de Firebase
 const firebaseConfig = {
@@ -72,16 +70,14 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
-
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    
     maxZoom: 19,
 }).addTo(map);
 
 var marker = L.marker(map.getCenter(), { icon: arrowIcon }).addTo(map);
 
 function addDangerZone(lat, lng, radius) {
-    // Guardar la zona peligrosa en Firestore
     db.collection("dangerZones").add({
         lat: lat,
         lng: lng,
@@ -131,27 +127,24 @@ function onLocationFound(e) {
     if (firstLocationFound && tracking) {
         map.setView(latlng, map.getZoom());
     } else if (!firstLocationFound) {
-        map.setView(latlng, 16); // Cambia el valor 16 al nivel de zoom deseado
+        map.setView(latlng, 16);
         firstLocationFound = true;
     }
 
     var inDangerZone = dangerZones.some(zone => {
         var distance = map.distance(latlng, zone.circle.getLatLng());
         var radius = zone.circle.getRadius();
-        
-        // Calcular la membresía difusa
         var dangerLevel = getDangerLevel(distance, radius);
-        
-        // Ajustar el volumen del audio según el nivel de peligrosidad
+
         if (dangerLevel === 'high') {
-            setAudioVolume(1.0); // 100%
+            setAudioVolume(1.0);
             triggerVibration();
         } else if (dangerLevel === 'medium') {
-            setAudioVolume(0.6); // 60%
+            setAudioVolume(0.6);
         } else if (dangerLevel === 'low') {
-            setAudioVolume(0.3); // 30%
+            setAudioVolume(0.3);
         } else {
-            setAudioVolume(0.0); // 0%
+            setAudioVolume(0.0);
             stopVibration();
         }
 
@@ -163,6 +156,7 @@ function onLocationFound(e) {
             audio.loop = true;
             audio.play();
             currentlyPlaying = true;
+            document.getElementById('stop-alarm-btn').style.display = 'block';
         }
     } else {
         if (currentlyPlaying) {
@@ -170,36 +164,36 @@ function onLocationFound(e) {
             audio.currentTime = 0;
             currentlyPlaying = false;
             stopVibration();
+            
         }
     }
 }
+
 const opcionesDeSolicitud = {
-    enableHighAccuracy: true, // Alta precisión
-    maximumAge: 0, // No queremos caché
-    timeout: 5000 // Esperar solo 5 segundos
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 5000
 };
 
 map.on('locationfound', onLocationFound);
 
-        function handleError(error) {
-            console.error('Error al obtener la geolocalización:', error);
-        }
+function handleError(error) {
+    console.error('Error al obtener la geolocalización:', error);
+}
 
-        // Pedir permiso de geolocalización con alta precisión
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(function(position) {
-                onLocationFound({
-                    latlng: {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    }
-                });
-            }, handleError, opcionesDeSolicitud);
-        } else {
-            console.error('La geolocalización no es soportada por este navegador.');
-        }
+if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(function(position) {
+        onLocationFound({
+            latlng: {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            }
+        });
+    }, handleError, opcionesDeSolicitud);
+} else {
+    console.error('La geolocalización no es soportada por este navegador.');
+}
 
-// Manejador de orientación del dispositivo sin solicitar permisos
 function handleOrientation(event) {
     var alpha = event.alpha;
     var arrow = document.querySelector('.arrow-icon');
@@ -208,7 +202,7 @@ function handleOrientation(event) {
     }
 }
 
-window.addEventListener("deviceorientation", handleOrientation, true);
+window.addEventListener("deviceorientation", handleOrientation, false);
 
 document.getElementById('add-danger-zone-btn').addEventListener('click', function () {
     addingDangerZone = !addingDangerZone;
@@ -325,7 +319,10 @@ function stopVibration() {
     }
 }
 
-// Configurar la escucha en tiempo real para las zonas peligrosas
+document.getElementById('stop-alarm-btn').addEventListener('click', function() {
+    inDangerZone = false
+});
+
 db.collection("dangerZones").onSnapshot((snapshot) => {
     snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
@@ -339,6 +336,7 @@ db.collection("dangerZones").onSnapshot((snapshot) => {
                 map.removeLayer(zone.circle);
                 map.removeLayer(zone.marker);
                 dangerZones.splice(zoneIndex, 1);
+                alarmStoppedZones.delete(id);
             }
         }
     });
@@ -355,7 +353,6 @@ function showCommentsForZone(zoneId) {
             const commentItem = document.createElement('li');
             commentItem.className = 'list-group-item';
             commentItem.textContent = data.comment;
-            // Mostrar la foto y el nombre del usuario
             const userPhoto = document.createElement('img');
             userPhoto.src = data.userPhoto;
             userPhoto.alt = data.userName;
@@ -365,15 +362,12 @@ function showCommentsForZone(zoneId) {
             userName.textContent = data.userName;
             commentItem.appendChild(userName);
             commentsList.appendChild(commentItem);
-             // Obtener información del usuario
-             const userId = data.userId; 
         });
     })
     .catch(function(error) {
         console.error("Error al cargar comentarios: ", error);
     });
 
-    // Actualizar el formulario para asociar el comentario con la zona roja
     document.getElementById('comment-form').dataset.zoneId = zoneId;
 }
 
@@ -389,7 +383,6 @@ document.getElementById('comment-form').addEventListener('submit', function (eve
         return;
     }
 
-    // Guardar el comentario en Firestore
     db.collection("comments").add({
         userId: user.uid,
         userPhoto: user.photoURL,
@@ -400,7 +393,7 @@ document.getElementById('comment-form').addEventListener('submit', function (eve
     })
     .then(function(docRef) {
         console.log("Comentario guardado con ID: ", docRef.id);
-        showCommentsForZone(zoneId); // Recargar los comentarios para la zona actual
+        showCommentsForZone(zoneId);
     })
     .catch(function(error) {
         console.error("Error al guardar comentario: ", error);
@@ -411,10 +404,8 @@ document.getElementById('comment-form').addEventListener('submit', function (eve
 
 const auth = firebase.auth();
 
-
 auth.onAuthStateChanged((user) => {
     if (user) {
-        // El usuario está autenticado
         const userName = document.getElementById('user-name');
         const userPhoto = document.getElementById('user-photo');
 
@@ -427,10 +418,9 @@ auth.onAuthStateChanged((user) => {
         if (user.photoURL) {
             userPhoto.src = user.photoURL;
         } else {
-            userPhoto.src = 'default-avatar.png'; // Ruta a una imagen predeterminada
+            userPhoto.src = 'default-avatar.png';
         }
     } else {
-        // No hay usuario autenticado, redirigir al login
         window.location.href = 'login.html';
     }
 });
