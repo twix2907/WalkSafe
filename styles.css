@@ -1,190 +1,156 @@
-#map {
-    height: 500px;
-    width: 100%;
-    position: relative;
+/* General styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
 }
+
+/* Map styles */
+#map {
+    height: 100vh;
+    width: 100vw;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 20px;
+}
+.overlay {
+    position: absolute;
+    z-index: 1000;
+}
+.title-overlay {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+.btnmenu{
+    top: 1px;
+    left: 10%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+/* Arrow icon styles */
 .arrow-icon {
     width: 24px;
     height: 24px;
     display: block;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="13" r="2"/><path d="M12 22h0"/></svg>');
+    background-image: url("image/32x32.png");
     background-size: cover;
     transform-origin: 50% 50%;
 }
+
+/* Hidden marker styles */
 .hidden-marker {
     opacity: 0;
 }
+
+/* Locate button styles */
 .locate-btn {
-    background-color: white;
+    background-color: #fff;
     border: 2px solid #007bff;
     border-radius: 50%;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, border-color 0.3s, transform 0.3s;
 }
+
 .locate-btn:hover {
     background-color: #007bff;
-    color: white;
+    border-color: #0056b3;
+    transform: scale(1.1);
 }
+
 .locate-btn.active {
-    background-color: #007bff;
+    background-color: #0056b3;
     color: white;
 }
-#confirm-zone-btn {
-    display: none;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
+
+.locate-btn i {
+    font-size: 24px;
 }
+
+/* Center pin styles */
 #center-pin {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    display: none;
     z-index: 1000;
+    display: none;
 }
+
 .pin-icon {
-    width: 24px;
-    height: 24px;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="13" r="2"/><path d="M12 22h0"/></svg>');
+    width: 60px;
+    height: 60px;
+    background-image:url("image/pin.svg");
     background-size: cover;
 }
-.user-panel .image img {
-    max-width: 100%;
-    height: auto;
-}
-/* Estilos para la barra lateral */
-.sidebar {
-    width: 250px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    z-index: 1000;
-    overflow-x: hidden;
-    padding-top: 20px;
-}
 
-.user-panel {
-    text-align: center;
-    padding: 10px;
-}
-
-.user-panel .image img {
+/* User photo styles */
+#user-photo {
     width: 100px;
     height: 100px;
     border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 10px;
 }
 
-.user-panel .info {
-    margin-top: 10px;
+/* Comments list styles */
+#comments-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-.user-panel .info a {
-    font-size: 18px;
-    color: #333;
-    text-decoration: none;
-}
-body{
-    font-family: "Roboto";
-}
-.content {
-    margin-left: 250px;
-    padding: 20px;
-}
-
-        /* Aplicar bordes redondeados al contenedor del mapa */
-        .leaflet-container {
-            border-radius: 15px; /* Ajusta el valor según el redondeo que desees */
-            overflow: hidden; /* Asegura que el mapa no sobresalga del contenedor redondeado */
-        }
-
-        /* Ajustar tamaño para demostración */
-        body, html {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-
-        #map {
-            width: 100%;
-            height: 100%;
-        }
-/* Ajustes opcionales para el botón */
-.menu-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-#map {
-    height: 500px;
-    width: 100%;
-    position: relative;
-}
-.arrow-icon {
-    width: 24px;
-    height: 24px;
-    display: block;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="13" r="2"/><path d="M12 22h0"/></svg>');
-    background-size: cover;
-    transform-origin: 50% 50%;
-}
-.hidden-marker {
-    opacity: 0;
-}
-.locate-btn {
-    background-color: white;
-    border: 2px solid #007bff;
-    border-radius: 50%;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
+#comments-list li {
     display: flex;
     align-items: center;
-    justify-content: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
 }
-.locate-btn:hover {
-    background-color: #007bff;
-    color: white;
+
+#comments-list img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
 }
-.locate-btn.active {
-    background-color: #007bff;
-    color: white;
+
+#comments-list span {
+    font-weight: bold;
+    margin-right: 10px;
 }
-#confirm-zone-btn {
-    display: none;
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
+
+/* Utility classes */
+.text-center {
+    text-align: center;
 }
-#center-pin {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: none;
-    z-index: 1000;
+
+.mt-20 {
+    margin-top: 20px;
 }
-.pin-icon {
-    width: 24px;
-    height: 24px;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="13" r="2"/><path d="M12 22h0"/></svg>');
-    background-size: cover;
+
+.mb-20 {
+    margin-bottom: 20px;
 }
-.user-panel .image img {
-    max-width: 100%;
-    height: auto;
+
+.p-10 {
+    padding: 10px;
 }
