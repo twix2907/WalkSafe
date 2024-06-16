@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camina Seguro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="map">
+        <div id="center-pin">
+            <div class="pin-icon"></div>
+        </div>
+    </div>
+    <div class="topbar">
+        <button id="menuButton" class="icon-button"><i class="fas fa-bars"></i></button>
+        <h1>TENKU</h1>
+    </div>
+    <div id="bottom-right-buttons" class="bottom-right-buttons">
+        <button id="ruta-btn" class="icon-button circular-button"><i class="fas fa-route"></i></button>
+        ç<button id="destino-btn" class="icon-button circular-button"><i class="fas fa-check"></i></button>
+        <button id="add-danger-zone-btn" class="icon-button circular-button"><i class="fas fa-plus"></i></button>
+        <button id="confirm-zone-btn" class="icon-button circular-button"><i class="fas fa-crosshairs"></i></button>
+        
+    </div>
+    <div id="drawer" class="drawer">
+        <div class="user-info">
+            <img id="user-photo" src="" alt="Usuario" class="user-avatar">
+            <p id="user-name" ></p>
+        </div>
+        <div class="drawer-footer">
+            <!-- Contenedor para el botón de cerrar sesión -->
+            <button id="logout-btn" class="logout-button">Cerrar sesión</button>
+        </div>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span id="closeModalButton" class="close-button">&times;</span>
+            <h2>Ingresar Número</h2>
+            <input type="number" id="numberInput" placeholder="Ingrese un número">
+            <button id="submitButton">Submit</button>
+        </div>
+    </div>
+
+    <div id="commentPanel" class="comment-panel">
+        <h2>Lista de Comentarios</h2>
+        <div id='comments-list' class="comment-list">
+            <div class="comment">
+                <img id='usuarioFotoComentario' src="user1.jpg" alt="Usuario 1" class="comment-avatar">
+                <div class="comment-details">
+                    <p id='autorcomentario' class="comment-author">Nombre del Usuario 1</p>
+                    <p id='comentario' class="comment-text">Este es el primer comentario. Lorem ipsum dolor sit amet.</p>
+                    <p id='fechacomentario' class="comment-time">15 de junio, 2024 - 14:30</p>
+                </div>
+            </div>
+            <!-- Puedes agregar más comentarios aquí -->
+        </div>
+        <form id="comment-form" class="comment-form" data-zone-id="">
+            <div class="form-group">
+                <input type="text" id="comment" class="form-control comment-input" placeholder="Escribe tu comentario..." required>
+                <button id='enviarComentario'type="submit" class="btn btn-primary"><i class="fas fa-arrow-right"></i></button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"
+  type="text/javascript" charset="utf-8"></script>
+<script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"
+  type="text/javascript" charset="utf-8"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/@mapbox/mapbox-sdk/umd/mapbox-sdk.min.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+
+
+    
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js"
+        charset="utf-8"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="js/app.js"></script>
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado con éxito:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Registro del Service Worker fallido:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
